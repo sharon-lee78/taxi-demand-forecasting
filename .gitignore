@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Accidentally-downloaded package files (e.g. from `pip download`)
+*.whl
+
+# Original class presentation, keeping this local only
+Final Project.pptx
