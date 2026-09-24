@@ -62,7 +62,3 @@ For a company running a fleet, this suggests a fairly practical strategy: don't 
 ## Limitations
 
 The underlying data is citywide totals, with no zone or borough breakdown, so everything here is "when" and not "where." A version of this with location data would let the same kind of analysis answer which parts of the city are worth targeting at which hours, which is probably the more useful next step.
-
-## Reproducing this
-
-Main dependencies: pandas, numpy, matplotlib, seaborn, statsmodels, prophet. Run `hourly_demand_analysis.ipynb` top to bottom; the hyperparameter search cells for Prophet and SARIMAX take a while to run since they're fitting a lot of models, so budget time for those.
