@@ -47,17 +47,28 @@ On this single test window, seasonal naive won by a clear margin on every metric
 
 One test window isn't enough to conclude naive wins outright, so I reran the same comparison on four other two week windows spread across different points in the data, including two that cover the New Year holiday period.
 
-Naive only won one of the four. Across more varied conditions it's a much closer contest, and the holiday windows are where the difference shows up clearly: actual demand drops well below the "normal" pattern over the holidays, and naive has no way to see that coming since it's just copying last week's value. Prophet, which has US holidays built in, tracked the dip noticeably better.
+Naive only won one of the four. Across more varied conditions it's a much closer contest:
+
+| Window | Seasonal naive | Prophet | SARIMAX |
+|---|---|---|---|
+| 2022-23 New Year | 267.7 | 273.5 | **221.8** |
+| 2023 summer | 144.8 | **88.7** | 193.0 |
+| 2024 spring | **55.7** | 90.6 | 105.7 |
+| 2024-25 New Year | 194.2 | **161.9** | 189.2 |
+
+*MAE in trips per hour. Lowest in each row in bold.*
+
+Counting the original window, naive won 2 of the 3 ordinary windows. It lost both holiday windows: actual demand drops well below the "normal" pattern over the holidays, and naive has no way to see that coming since it's just copying last week's value. But the winner was a different model each time (SARIMAX in 2022-23, Prophet in 2024-25), each about 17% below naive's MAE, and in 2022-23 Prophet did slightly worse than naive even with US holidays built in. Holidays are also hard for every model: MAPE was 46-61% in both holiday windows, compared with roughly 10-25% in ordinary weeks.
 
 ![Model comparison across multiple windows](images/model_comparison_robustness.png)
 
-The conclusion, then: seasonal naive is a genuinely strong baseline during ordinary weeks, and it's hard to justify a more complex model if that's all you need. But it breaks down exactly where you'd expect it to, around holidays and other calendar anomalies it has no way to know about.
+The conclusion, then: seasonal naive is a genuinely strong baseline during ordinary weeks, and it's hard to justify a more complex model if that's all you need. It does break down around holidays, where it has no way to know the calendar has changed, but no single model reliably fixed that in these windows.
 
 ## What this means in practice
 
 For an individual driver, the hour by day heatmap is a direct answer to "when should I actually be driving," and it corrects a real misconception (Friday night isn't it). The fact that naive performs so well in ordinary weeks is also good news for a driver, since it means a simple rule of thumb like "if it was busy this time last week, it'll probably be busy again" works about as well as anything more sophisticated, at least outside of holidays.
 
-For a company running a fleet, this suggests a fairly practical strategy: don't invest in a heavier forecasting pipeline for routine weeks where a lookup table already does the job, but do lean on a model like Prophet specifically around known anomalies like holidays, where naive demonstrably falls apart. It's also worth noting SARIMAX kept underpredicting peak demand even after tuning, which matters more than it sounds like if that model were ever used to set staffing or surge thresholds. A model with a low average error isn't automatically the right choice if its errors are concentrated exactly where the business cares most, at the peaks.
+For a company running a fleet, this suggests a fairly practical strategy: don't invest in a heavier forecasting pipeline for routine weeks where a lookup table already does the job, and put the modeling effort into holidays and other known anomalies instead. Two holiday windows aren't enough to say which model should handle that, so the next step would be to test more holidays (Thanksgiving, July 4th) before committing to one. It's also worth noting SARIMAX kept underpredicting peak demand even after tuning, which matters more than it sounds like if that model were ever used to set staffing or surge thresholds. A model with a low average error isn't automatically the right choice if its errors are concentrated exactly where the business cares most, at the peaks.
 
 ## Limitations
 
